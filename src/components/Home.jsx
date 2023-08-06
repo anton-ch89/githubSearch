@@ -1,27 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import styled from "styled-components";
 import debounce from "lodash.debounce";
 import { ItemList } from "./ItemList";
 import { Pagination } from "./Pagination/Pagination";
 import { screenSize, primary } from "../Styles/theme";
+import { AppContext } from "../App";
 
-export const Home = ({
-  items,
-  repos,
-  isLoading,
-  setFilter,
-  setUserUrl,
-  filter,
-  searchInput,
-  setSearchInput,
-  setRepoUrl,
-  activeUserPage,
-  activeRepoPage,
-  setActiveUserPage,
-  setActiveRepoPage,
-  totalCount,
-  totalPageCount,
-}) => {
+export const Home = ({}) => {
+  const { setFilter, setSearchInput, totalCount } = useContext(AppContext);
   const [value, setValue] = useState("");
   const setDebounce = useCallback(
     debounce((str) => {
@@ -49,22 +35,8 @@ export const Home = ({
           Repositories
         </FilterButton>
       </ButtonWrapper>
-      <ItemList
-        items={items}
-        repos={repos}
-        isLoading={isLoading}
-        setUserUrl={setUserUrl}
-        filter={filter}
-        setRepoUrl={setRepoUrl}
-      />
-      <Pagination
-        activeUserPage={activeUserPage}
-        activeRepoPage={activeRepoPage}
-        setActiveUserPage={setActiveUserPage}
-        setActiveRepoPage={setActiveRepoPage}
-        totalPageCount={totalPageCount}
-        filter={filter}
-      />
+      <ItemList />
+      <Pagination />
     </AppWrapper>
   );
 };

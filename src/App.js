@@ -3,7 +3,9 @@ import { Home } from "./components/Home";
 import { FullUserCard } from './components/Cards/FullUserCard'
 import { FullRepoCard } from "./components/Cards/FullRepoCard";
 import { Route, Routes } from "react-router-dom";
+import { createContext } from "react";
 
+export const AppContext = createContext();
 
 function App() {
   const [
@@ -30,28 +32,29 @@ function App() {
 
 
   return (
-    <Routes>
-      <Route path="" element={
-        < Home
-          items={items}
-          repos={repos}
-          isLoading={isLoading}
-          setFilter={setFilter}
-          setUserUrl={setUserUrl}
-          filter={filter}
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          setRepoUrl={setRepoUrl}
-          activeUserPage={activeUserPage}
-          activeRepoPage={activeRepoPage}
-          setActiveUserPage={setActiveUserPage}
-          setActiveRepoPage={setActiveRepoPage}
-          totalCount={totalCount}
-          totalPageCount={totalPageCount}
-        />} />
-      <Route path='FullUserCard' element={<FullUserCard userInfo={userInfo} userFollowers={userFollowers} userRepos={userRepos} />} />
-      <Route path='FullRepoCard' element={<FullRepoCard repoInfo={repoInfo} />} />
-    </Routes>
+    <AppContext.Provider value={{
+      items,
+      repos,
+      isLoading,
+      setFilter,
+      setUserUrl,
+      filter,
+      searchInput,
+      setSearchInput,
+      setRepoUrl,
+      activeUserPage,
+      activeRepoPage,
+      setActiveUserPage,
+      setActiveRepoPage,
+      totalCount,
+      totalPageCount,
+    }}>
+      <Routes>
+        <Route path="" element={< Home />} />
+        <Route path='FullUserCard' element={<FullUserCard userInfo={userInfo} userFollowers={userFollowers} userRepos={userRepos} />} />
+        <Route path='FullRepoCard' element={<FullRepoCard repoInfo={repoInfo} />} />
+      </Routes>
+    </AppContext.Provider>
   );
 }
 

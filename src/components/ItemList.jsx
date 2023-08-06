@@ -1,17 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { UserCard } from "./Cards/UserCard";
 import { ReposCard } from "./Cards/ReposCard";
 import { screenSize } from "../Styles/theme";
+import { AppContext } from "../App";
 
-export const ItemList = ({
-  items,
-  repos,
-  isLoading,
-  setUserUrl,
-  filter,
-  setRepoUrl,
-}) => {
+export const ItemList = () => {
+  const { items, repos, isLoading, setUserUrl, filter, setRepoUrl } =
+    useContext(AppContext);
   const getUsersData = () => {
     return items.map((obj, i) => {
       return <UserCard key={i} obj={obj} setUserUrl={setUserUrl} />;

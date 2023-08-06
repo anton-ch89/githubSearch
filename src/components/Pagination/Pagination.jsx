@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { primary } from "../../Styles/theme";
+import { AppContext } from "../../App";
 
-export const Pagination = ({
-  activeUserPage,
-  activeRepoPage,
-  setActiveUserPage,
-  setActiveRepoPage,
-  totalPageCount,
-  filter,
-}) => {
+export const Pagination = () => {
+  const {
+    activeUserPage,
+    activeRepoPage,
+    setActiveUserPage,
+    setActiveRepoPage,
+    totalPageCount,
+    filter,
+  } = useContext(AppContext);
   const incPage = () => {
     if (filter === "users") {
       return activeUserPage < totalPageCount
