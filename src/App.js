@@ -1,24 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import { UseFetch } from "./components/UseFetch";
+import { Home } from "./components/Home";
+import { FullUserCard } from './components/Cards/FullUserCard'
+import { FullRepoCard } from "./components/Cards/FullRepoCard";
+import { Route, Routes } from "react-router-dom";
+
 
 function App() {
+  const [
+    items,
+    repos,
+    isLoading,
+    setFilter,
+    setUserUrl,
+    userInfo,
+    filter,
+    searchInput,
+    setSearchInput,
+    userFollowers,
+    setRepoUrl,
+    repoInfo,
+    userRepos,
+    activeUserPage,
+    activeRepoPage,
+    setActiveUserPage,
+    setActiveRepoPage,
+    totalCount,
+    totalPageCount
+  ] = UseFetch()
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="" element={
+        < Home
+          items={items}
+          repos={repos}
+          isLoading={isLoading}
+          setFilter={setFilter}
+          setUserUrl={setUserUrl}
+          filter={filter}
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          setRepoUrl={setRepoUrl}
+          activeUserPage={activeUserPage}
+          activeRepoPage={activeRepoPage}
+          setActiveUserPage={setActiveUserPage}
+          setActiveRepoPage={setActiveRepoPage}
+          totalCount={totalCount}
+          totalPageCount={totalPageCount}
+        />} />
+      <Route path='FullUserCard' element={<FullUserCard userInfo={userInfo} userFollowers={userFollowers} userRepos={userRepos} />} />
+      <Route path='FullRepoCard' element={<FullRepoCard repoInfo={repoInfo} />} />
+    </Routes>
   );
 }
 
