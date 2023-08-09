@@ -2,65 +2,59 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsers, setRepos, setIsLoading, setError } from './redux/slices/dataSlice';
+import { setUserInfo, setRepoInfo, setUserFollowers, setUserRepos } from './redux/slices/cardsSlice';
+import { setTotalCount } from './redux/slices/paginationSlice';
 
 export const UseFetch = () => {
 
-    const [items, setItems] = useState([]);
-    const [searchInput, setSearchInput] = useState('');
-    const [repos, setRepos] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [userInfo, setUserInfo] = useState({});
-    const [repoInfo, setRepoInfo] = useState({});
-    const [userUrl, setUserUrl] = useState('');
-    const [repoUrl, setRepoUrl] = useState('');
-    const [userFollowers, setUserFollowers] = useState([]);
-    const [userRepos, setUserRepos] = useState([]);
-    const [filter, setFilter] = useState('users')
-    const [activeUserPage, setActiveUserPage] = useState(1);
-    const [activeRepoPage, setActiveRepoPage] = useState(1);
-    const [totalCount, setTotalCount] = useState(null);
-    const [perPage, setPerPage] = useState(10);
+    const dispatch = useDispatch();
+    const { searchInput, filter } = useSelector((state) => state.search)
+    const { userInfo, repoInfo, userUrl, repoUrl, userFollowers, userRepos } = useSelector((state) => state.cards)
+    const { activeUserPage, activeRepoPage, perPage } = useSelector((state) => state.pagination)
 
     const searchName = 'a';
-    const totalPageCount = Math.ceil(totalCount / perPage);
-
     const rootUrl = `https://api.github.com`
     const axiosUsers = `${filter}?q=${!searchInput.length ? searchName : searchInput}&per_page=${perPage}&page=${activeUserPage}`;
     const axiosRepos = `${filter}?q=${!searchInput.length ? searchName : searchInput}&sort=stars&per_page=${perPage}&page=${activeRepoPage}`;
     useEffect(() => {
-        try {
-            setIsLoading(true)
-            const fetchData = async () => {
-                setTotalCount(null)
+        const fetchData = async () => {
+            try {
+                dispatch(setIsLoading(true))
+                dispatch(setTotalCount(null))
                 if (filter === 'users') {
                     const resp = await axios.get(`${rootUrl}/search/${axiosUsers}`)
-                    setTotalCount(resp.data.total_count)
+                    dispatch(setTotalCount(resp.data.total_count))
                     const data = resp.data.items;
-                    setItems(data)
+                    dispatch(setUsers(data))
                 } else {
                     const resp = await axios.get(`${rootUrl}/search/${axiosRepos}`)
-                    setTotalCount(resp.data.total_count)
+                    dispatch(setTotalCount(resp.data.total_count))
                     const data = resp.data.items;
-                    setRepos(data)
+                    dispatch(setRepos(data))
                 }
-                setIsLoading(false)
+                dispatch(setIsLoading(false))
+
+            } catch (error) {
+                // const newErr = error.message
+                dispatch(setError(error.message))
             }
-            fetchData()
-        } catch (error) {
-            console.error(error);
         }
+        fetchData()
+
     }, [filter, searchInput, activeUserPage, activeRepoPage])
     useEffect(() => {
         if (userUrl.length) {
-            setUserInfo({})
+            dispatch(setUserInfo({}))
             try {
                 const fetchData = async () => {
                     const resp = await axios.get(`${userUrl}`);
                     const respFollowers = await axios.get(`${userUrl}/followers?&per_page=5&`)
                     const respRepos = await axios.get(`${userUrl}/repos?&per_page=5`)
-                    setUserFollowers(respFollowers.data)
-                    setUserRepos(respRepos.data)
-                    setUserInfo(resp.data)
+                    dispatch(setUserFollowers(respFollowers.data))
+                    dispatch(setUserRepos(respRepos.data))
+                    dispatch(setUserInfo(resp.data))
                 }
                 fetchData()
             } catch (error) {
@@ -71,11 +65,11 @@ export const UseFetch = () => {
     }, [userUrl]);
     useEffect(() => {
         if (repoUrl.length) {
-            setRepoInfo({})
+            dispatch(setRepoInfo({}))
             try {
                 const fetchData = async () => {
                     const resp = await axios.get(`${repoUrl}`);
-                    setRepoInfo(resp.data)
+                    dispatch(setRepoInfo(resp.data))
 
                 }
                 fetchData()
@@ -88,15 +82,15 @@ export const UseFetch = () => {
 
     useEffect(() => {
         if (JSON.parse(localStorage.getItem("user")) !== null) {
-            setUserInfo(JSON.parse(localStorage.getItem("user")))
-            setUserFollowers(JSON.parse(localStorage.getItem("followers")))
-            setUserRepos(JSON.parse(localStorage.getItem("userRepos")))
+            dispatch(setUserInfo(JSON.parse(localStorage.getItem("user"))))
+            dispatch(setUserFollowers(JSON.parse(localStorage.getItem("followers"))))
+            dispatch(setUserRepos(JSON.parse(localStorage.getItem("userRepos"))))
         }
 
     }, []);
     useEffect(() => {
         if (JSON.parse(localStorage.getItem("repo")) !== null) {
-            setRepoInfo(JSON.parse(localStorage.getItem("repo")))
+            dispatch(setRepoInfo(JSON.parse(localStorage.getItem("repo"))))
         }
 
     }, []);
@@ -115,24 +109,4 @@ export const UseFetch = () => {
     }, [repoInfo]);
 
 
-    return [items,
-        repos,
-        isLoading,
-        setFilter,
-        setUserUrl,
-        userInfo,
-        filter,
-        searchInput,
-        setSearchInput,
-        userFollowers,
-        setRepoUrl,
-        repoInfo,
-        userRepos,
-        activeUserPage,
-        activeRepoPage,
-        setActiveUserPage,
-        setActiveRepoPage,
-        totalCount,
-        totalPageCount
-    ]
 }

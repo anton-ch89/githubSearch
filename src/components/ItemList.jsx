@@ -3,28 +3,29 @@ import styled from "styled-components";
 import { UserCard } from "./Cards/UserCard";
 import { ReposCard } from "./Cards/ReposCard";
 import { screenSize } from "../Styles/theme";
+import { useSelector } from "react-redux";
 
-export const ItemList = ({
-  items,
-  repos,
-  isLoading,
-  setUserUrl,
-  filter,
-  setRepoUrl,
-}) => {
+export const ItemList = () => {
+  const { users, repos, isLoading, error } = useSelector((state) => state.data);
+  const filter = useSelector((state) => state.search.filter);
   const getUsersData = () => {
-    return items.map((obj, i) => {
-      return <UserCard key={i} obj={obj} setUserUrl={setUserUrl} />;
+    return users.map((obj, i) => {
+      return <UserCard key={i} obj={obj} />;
     });
   };
   const getReposData = () => {
     return repos.map((obj, i) => {
-      return <ReposCard key={i} obj={obj} setRepoUrl={setRepoUrl} />;
+      return <ReposCard key={i} obj={obj} />;
     });
   };
+
+  if (error) {
+    return <ErrorHeader>{error}</ErrorHeader>;
+  }
   if (isLoading) {
     return <Loading>Loading...</Loading>;
   }
+
   return (
     <ListWrapper>
       <ListItems>
@@ -56,4 +57,7 @@ const ListItems = styled.div`
 export const Loading = styled.h2`
   margin-top: 50px;
   text-align: center;
+`;
+const ErrorHeader = styled.h2`
+  color: red;
 `;

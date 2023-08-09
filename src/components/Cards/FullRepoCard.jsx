@@ -4,8 +4,11 @@ import { Card } from "./FullUserCard";
 import { Cards } from "./FullUserCard";
 import { Loading } from "../ItemList";
 import { GitLink } from "./FullUserCard";
+import { useSelector } from "react-redux";
 
-export const FullRepoCard = ({ repoInfo }) => {
+export const FullRepoCard = () => {
+  const repoInfo = useSelector((state) => state.cards.repoInfo);
+
   if (!Object.keys(repoInfo).length) {
     return <Loading>Loading...</Loading>;
   }

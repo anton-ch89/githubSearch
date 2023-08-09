@@ -1,32 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 import { primary } from "../../Styles/theme";
+import { useSelector, useDispatch } from "react-redux";
+import { setActiveUserPage } from "../redux/slices/paginationSlice";
 
-export const Pagination = ({
-  activeUserPage,
-  activeRepoPage,
-  setActiveUserPage,
-  setActiveRepoPage,
-  totalPageCount,
-  filter,
-}) => {
+export const UsersPagination = () => {
+  const dispatch = useDispatch();
+
+  const { activeUserPage, totalCount, perPage } = useSelector(
+    (state) => state.pagination
+  );
+
+  const totalPageCount = Math.ceil(totalCount / perPage);
+
   const incPage = () => {
-    if (filter === "users") {
-      return activeUserPage < totalPageCount
-        ? setActiveUserPage((prev) => prev + 1)
-        : "";
-    } else {
-      return activeRepoPage < totalPageCount
-        ? setActiveRepoPage((prev) => prev + 1)
-        : "";
-    }
+    return activeUserPage < totalPageCount
+      ? dispatch(setActiveUserPage(activeUserPage + 1))
+      : null;
   };
+
   const decPage = () => {
-    if (filter === "users") {
-      return activeUserPage > 1 ? setActiveUserPage((prev) => prev - 1) : "";
-    } else {
-      return activeRepoPage > 1 ? setActiveRepoPage((prev) => prev - 1) : "";
-    }
+    return activeUserPage > 1
+      ? dispatch(setActiveUserPage(activeUserPage - 1))
+      : "";
   };
   if (!totalPageCount) {
     return "";
@@ -42,8 +38,7 @@ export const Pagination = ({
       )}
 
       <p className="page-wrapper">
-        <span>{filter === "users" ? activeUserPage : activeRepoPage}</span> of{" "}
-        {totalPageCount}
+        <span>{activeUserPage}</span> of {totalPageCount}
       </p>
       {activeUserPage < totalPageCount ? (
         <p onClick={incPage} className="arrow">
@@ -56,7 +51,7 @@ export const Pagination = ({
   );
 };
 
-const PagesList = styled.div`
+export const PagesList = styled.div`
   display: flex;
   align-items: center;
 

@@ -5,8 +5,12 @@ import { FiUsers, FiUserPlus } from "react-icons/fi";
 import { VscGist } from "react-icons/vsc";
 import { Loading } from "../ItemList";
 import { primary } from "../../Styles/theme";
+import { useSelector } from "react-redux";
 
-export const FullUserCard = ({ userInfo, userFollowers, userRepos }) => {
+export const FullUserCard = () => {
+  const { userInfo, userFollowers, userRepos } = useSelector(
+    (state) => state.cards
+  );
   const { public_repos, followers, following, public_gists } = userInfo;
   const [index, setIndex] = useState(0);
   const items = [
@@ -102,32 +106,33 @@ export const FullUserCard = ({ userInfo, userFollowers, userRepos }) => {
               {userInfo.blog ? <p>Blog: {userInfo.blog}</p> : ""}
             </div>
           </Card>
-          {userFollowers.length ? (
-            <Card>
-              <div className="title-wrapper">
-                <p
-                  onClick={() => setIndex(0)}
-                  className={
-                    index === 0 ? "title-foll" + " active" : "title-foll"
-                  }
-                >
-                  Followers
-                </p>
+
+          <Card>
+            <div className="title-wrapper">
+              <p
+                onClick={() => setIndex(0)}
+                className={
+                  index === 0 ? "title-foll" + " active" : "title-foll"
+                }
+              >
+                Repositories
+              </p>
+              {userFollowers.length ? (
                 <p
                   onClick={() => setIndex(1)}
                   className={
                     index === 1 ? "title-repo" + " active" : "title-repo"
                   }
                 >
-                  Repositories
+                  Followers
                 </p>
-              </div>
+              ) : (
+                ""
+              )}
+            </div>
 
-              {index === 0 ? getFollowers() : getRepos()}
-            </Card>
-          ) : (
-            ""
-          )}
+            {index === 1 ? getFollowers() : getRepos()}
+          </Card>
         </Cards>
       </CardWrapper>
     </PageWrapper>

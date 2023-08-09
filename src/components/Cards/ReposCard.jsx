@@ -4,14 +4,18 @@ import { ListItem } from "./UserCard";
 import styled from "styled-components";
 import { GoRepo } from "react-icons/go";
 import { screenSize } from "../../Styles/theme";
+import { useDispatch } from "react-redux";
+import { setRepoUrl } from "../redux/slices/cardsSlice";
 
-export const ReposCard = ({ obj, setRepoUrl }) => {
+export const ReposCard = ({ obj }) => {
+  const dispatch = useDispatch();
+
   return (
     <ListRepoItem>
       <Link
         to="/FullRepoCard"
         style={{ textDecoration: "none", color: "black" }}
-        onClick={() => setRepoUrl(obj.url)}
+        onClick={() => dispatch(setRepoUrl(obj.url))}
       >
         <div>
           <span>

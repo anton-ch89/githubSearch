@@ -2,69 +2,69 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import debounce from "lodash.debounce";
 import { ItemList } from "./ItemList";
-import { Pagination } from "./Pagination/Pagination";
+import { UsersPagination } from "./Pagination/UsersPagination";
+import { ReposPagination } from "./Pagination/ReposPagination";
 import { screenSize, primary } from "../Styles/theme";
-
-export const Home = ({
-  items,
-  repos,
-  isLoading,
-  setFilter,
-  setUserUrl,
-  filter,
-  searchInput,
-  setSearchInput,
-  setRepoUrl,
-  activeUserPage,
-  activeRepoPage,
-  setActiveUserPage,
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchInput, setFilter } from "./redux/slices/searchSlice";
+import {
   setActiveRepoPage,
-  totalCount,
-  totalPageCount,
-}) => {
+  setActiveUserPage,
+} from "./redux/slices/paginationSlice";
+
+export const Home = () => {
+  const dispatch = useDispatch();
+
+  const totalCount = useSelector((state) => state.pagination.totalCount);
+  const filter = useSelector((state) => state.search.filter);
+  const error = useSelector((state) => state.data.error);
   const [value, setValue] = useState("");
+
   const setDebounce = useCallback(
     debounce((str) => {
-      setSearchInput(str);
-    }, 550),
+      dispatch(setSearchInput(str));
+    }, 650),
     []
   );
+
   const onChangeInput = (event) => {
     setValue(event.target.value);
     setDebounce(event.target.value);
+    dispatch(setActiveRepoPage(1));
+    dispatch(setActiveUserPage(1));
   };
 
   return (
     <AppWrapper>
       <h1>Search</h1>
       <MainInput type="text" value={value} onChange={onChangeInput} />
-      {totalCount === null ? (
+      {error ? (
+        ""
+      ) : totalCount === null ? (
         <span>Loading...</span>
+      ) : totalCount === 0 ? (
+        ""
       ) : (
-        <span style={{ color: "#14a4e7" }}>Toatal: {totalCount}</span>
+        <span style={{ color: "#14a4e7", fontSize: "16px" }}>
+          Toatal: {totalCount}
+        </span>
       )}
       <ButtonWrapper>
-        <FilterButton onClick={() => setFilter("users")}>Users</FilterButton>
-        <FilterButton onClick={() => setFilter("repositories")}>
+        <FilterButton onClick={() => dispatch(setFilter("users"))}>
+          Users
+        </FilterButton>
+        <FilterButton onClick={() => dispatch(setFilter("repositories"))}>
           Repositories
         </FilterButton>
       </ButtonWrapper>
-      <ItemList
-        items={items}
-        repos={repos}
-        isLoading={isLoading}
-        setUserUrl={setUserUrl}
-        filter={filter}
-        setRepoUrl={setRepoUrl}
-      />
-      <Pagination
-        activeUserPage={activeUserPage}
-        activeRepoPage={activeRepoPage}
-        setActiveUserPage={setActiveUserPage}
-        setActiveRepoPage={setActiveRepoPage}
-        totalPageCount={totalPageCount}
-        filter={filter}
-      />
+      {totalCount === 0 ? (
+        <h2 style={{ color: "red" }}>No matches</h2>
+      ) : (
+        <>
+          <ItemList />
+          {filter === "users" ? <UsersPagination /> : <ReposPagination />}
+        </>
+      )}
     </AppWrapper>
   );
 };
